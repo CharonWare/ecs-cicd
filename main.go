@@ -17,14 +17,20 @@ func main() {
 	branch := os.Getenv("BRANCH")
 	token := os.Getenv("PAT_TOKEN")
 	ecr := os.Getenv("ECR")
-	region := os.Getenv("AWS_DEFAULT_REGION")
 
-	if project == "" || ecr == "" || region == "" {
-		log.Fatal("Missing required environment variables: PROJECT, BRANCH, PAT_TOKEN, ECR, AWS_DEFAULT_REGION")
+	if project == "" || ecr == "" {
+		log.Fatal("Missing required environment variables: PROJECT, ECR")
 	}
 	if branch == "" {
 		branch = "main"
 	}
+
+	// Extract region from ECR URI
+	region, err := extractRegionFromECR(ecr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// Create the authorised URL in order to clone/pull the repo using the PAT token
 	authURL := "https://" + token + "@github.com/" + project
 
@@ -65,6 +71,14 @@ func main() {
 			fmt.Println("Successfully pushed to ECR")
 		}
 	}
+}
+
+func extractRegionFromECR(ecr string) (string, error) {
+	parts := strings.Split(ecr, ".")
+	if len(parts) < 4 {
+		return "", fmt.Errorf("invalid ECR URI %q: must look like <account>.dkr.ecr.<region>.amazonaws.com/<repo>", ecr)
+	}
+	return parts[3], nil
 }
 
 // The project env var is [username || organisation]/repository, we just want repository for the directory name
