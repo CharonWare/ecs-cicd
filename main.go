@@ -19,8 +19,11 @@ func main() {
 	ecr := os.Getenv("ECR")
 	region := os.Getenv("AWS_DEFAULT_REGION")
 
-	if project == "" || branch == "" || token == "" || ecr == "" || region == "" {
+	if project == "" || token == "" || ecr == "" || region == "" {
 		log.Fatal("Missing required environment variables: PROJECT, BRANCH, PAT_TOKEN, ECR, AWS_DEFAULT_REGION")
+	}
+	if branch == "" {
+		branch = "main"
 	}
 	// Create the authorised URL in order to clone/pull the repo using the PAT token
 	authURL := "https://" + token + "@github.com/" + project
