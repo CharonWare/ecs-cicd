@@ -19,7 +19,7 @@ func main() {
 	ecr := os.Getenv("ECR")
 	region := os.Getenv("AWS_DEFAULT_REGION")
 
-	if project == "" || token == "" || ecr == "" || region == "" {
+	if project == "" || ecr == "" || region == "" {
 		log.Fatal("Missing required environment variables: PROJECT, BRANCH, PAT_TOKEN, ECR, AWS_DEFAULT_REGION")
 	}
 	if branch == "" {
